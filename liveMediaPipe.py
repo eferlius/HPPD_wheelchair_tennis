@@ -5,6 +5,8 @@ import cv2
 import keyboard
 import myMediaPipe as mpp
 import time
+import numpy as np
+import matplotlib.pyplot as plt
 # ----------------------------- PARAMETERS
 
 # ----------------------------- FLAGS
@@ -23,7 +25,8 @@ if __name__ == '__main__':
 
     #setting the frame counter
     frameCounter = 0
-
+    fig = plt.figure()
+    plt.ion()
     while success: #the camera is still sending images
         tic = time.time() # to log information about execution
 
@@ -49,8 +52,23 @@ if __name__ == '__main__':
         success, image = cap.read()
         image = cv2.flip(image, 1)
 
+        if results.multi_hand_landmarks:
+            # 3d rendering
+            w, h = 3, 21
+            Matrix = np.zeros((21, 3))
+            for number in range(21):
+                Matrix[number][0] = results.multi_hand_landmarks[0].landmark[number].x
+                Matrix[number][1] = results.multi_hand_landmarks[0].landmark[number].y
+                Matrix[number][2] = results.multi_hand_landmarks[0].landmark[number].z
+
+            plt.pause(0.05)
+            ax = plt.axes(projection='3d')
+            ax.stem(Matrix[:, 0], Matrix[:, 1], Matrix[:, 2])
+
         if keyboard.is_pressed("q"):
             print("q pressed, ending loop")
             break
 
     cap.release()
+
+    print(results.multi_hand_landmarks)

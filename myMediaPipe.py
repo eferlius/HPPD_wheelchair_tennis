@@ -15,7 +15,8 @@ def findLandMarks (image):
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_hands = mp.solutions.hands
 
-    with mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.5, min_tracking_confidence=0.5) as hands:
+    with mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, \
+                        min_tracking_confidence=0.5) as hands:
         '''Process the converted RGB image from a BGR one'''
         results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         return results
@@ -27,8 +28,6 @@ def resultsToArray(results, frameCounter):
     :return: an array containing the frame number and the position of hands landmarks
     [frameNumber, x0, y0, z0, x1, y1, z1... x20, y20, z20]
     """
-
-
     '''initialize the array that will contain the values'''
     landMarkArray = [frameCounter]
 
@@ -96,3 +95,22 @@ def drawOnImage(results, image):
                                       mp_drawing_styles.get_default_hand_landmarks_style(),
                                       mp_drawing_styles.get_default_hand_connections_style())
         return annotated_image
+
+def resultsToMatrix(results):
+    """
+    From the output of mediapipe.process, whose output is:
+    - multi_hand_landmarks
+    - multi_hand_world_landmarks
+    - multi_handedness
+    in which the date are given in lists, extracts a table for the first two for a better handling in the successive code
+    :param results:
+    :return:
+    """
+    w, h = 3, 21
+    Matrix = np.zeros((21, 3))
+    for number in range(21):
+        Matrix[number][0] = results.multi_hand_landmarks[0].landmark[number].x
+        Matrix[number][1] = results.multi_hand_landmarks[0].landmark[number].y
+        Matrix[number][2] = results.multi_hand_landmarks[0].landmark[number].z
+        # number [0] because interested in only one hand -> put max_num_hands = 1
+    return Matrix
