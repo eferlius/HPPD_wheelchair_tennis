@@ -37,10 +37,9 @@ if __name__ == '__main__':
         cv2.imshow("tmp", annotated_image)
         cv2.waitKey(1) #add waitKey when displaying an image
 
-        # logging information about this loop
+        # logging information about this execution
         toc = time.time()
         elapsed = toc - tic
-
         print('frame:  ' + str(frameCounter) + ' // elapsed: ' + "%.2f" % elapsed)
 
         # preparing for the next execution
